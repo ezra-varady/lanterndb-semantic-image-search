@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 def process_cal256(root_dir):
     subdirs_files_dict = {}
@@ -15,6 +16,13 @@ def process_cal256(root_dir):
     
     return subdirs_files_dict
 
+def insert_into_db(conn, k, im):
+    cur = conn.cursor()
+    path = f'{os.getcwd()}/256/{k}/{im}'
+    insert_query = f'INSERT INTO image_table (v, location) VALUES (clip_image(\'{path}\'), \'{path}\');'
+    cur.execute(insert_query)
+    conn.commit()
+    conn.close()
 
 if __name__=='__main__':
     files = process_cal256('256_ObjectCategories')
@@ -32,22 +40,18 @@ if __name__=='__main__':
             v REAL[],
             location VARCHAR,
             id SERIAL PRIMARY KEY
-        );
-    ''')
+        );''')
 
     conn.commit()
 
     abs_start = time.time()
     for i, k in enumerate(sorted(list(files.keys()))):
         start = time.time()
-        for im in files[k]:
-            path = f'{os.getcwd()}/256/{k}/{im}'
-            insert_query = f'INSERT INTO image_table (v, location) VALUES (clip_image(\'{path}\'), \'{path}\');'
-            cur.execute(insert_query)
-            conn.commit()
+        
+        with ProcessPoolExecutor(max_workers=16) as executor:
+            executor.map(lambda im: insert_into_db(conn, k, im), files[k])
+        
         end = time.time()
         print(f'completed {k} in {end-start} second, {end-abs_start} elapsed so far')
 
-    cur.execute('CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5, ef=30, ef_construction=30);')
-    conn.commit()
-
+    conn.close()
