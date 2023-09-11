@@ -16,7 +16,14 @@ def process_cal256(root_dir):
     
     return subdirs_files_dict
 
-def insert_into_db(conn, k, im):
+def insert_into_db(k, im):
+    conn = psycopg2.connect(
+        host="localhost",
+        database="",
+        user="",
+        password="",
+        port=5432
+    )
     cur = conn.cursor()
     path = f'{os.getcwd()}/256/{k}/{im}'
     insert_query = f'INSERT INTO image_table (v, location) VALUES (clip_image(\'{path}\'), \'{path}\');'
@@ -43,15 +50,15 @@ if __name__=='__main__':
         );''')
 
     conn.commit()
+    conn.close()
 
     abs_start = time.time()
     for i, k in enumerate(sorted(list(files.keys()))):
         start = time.time()
         
         with ProcessPoolExecutor(max_workers=16) as executor:
-            executor.map(lambda im: insert_into_db(conn, k, im), files[k])
+            executor.map(lambda im: insert_into_db(k, im), files[k])
         
         end = time.time()
         print(f'completed {k} in {end-start} second, {end-abs_start} elapsed so far')
 
-    conn.close()
