@@ -30,14 +30,15 @@ if __name__=='__main__':
     cur.execute('''
         CREATE TABLE IF NOT EXISTS image_table (
             v REAL[],
-            location VARCHAR
+            location VARCHAR,
+            id SERIAL PRIMARY KEY
         );
     ''')
 
     conn.commit()
 
     abs_start = time.time()
-    for i, k in enumerate(sorted(list(files.keys()))[198:]):
+    for i, k in enumerate(sorted(list(files.keys()))):
         start = time.time()
         for im in files[k]:
             path = f'{os.getcwd()}/256/{k}/{im}'
