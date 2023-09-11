@@ -25,7 +25,7 @@ def insert_into_db(k, im):
         port=5432
     )
     cur = conn.cursor()
-    path = f'{os.getcwd()}/256/{k}/{im}'
+    path = f'{os.getcwd()}/256_ObjectCategories/{k}/{im}'
     insert_query = f'INSERT INTO image_table (v, location) VALUES (clip_image(\'{path}\'), \'{path}\');'
     cur.execute(insert_query)
     conn.commit()
@@ -56,8 +56,11 @@ if __name__=='__main__':
     for i, k in enumerate(sorted(list(files.keys()))):
         start = time.time()
         
+        def process(im):
+            insert_into_db(k, im)
+
         with ProcessPoolExecutor(max_workers=16) as executor:
-            executor.map(lambda im: insert_into_db(k, im), files[k])
+            executor.map(process, files[k])
         
         end = time.time()
         print(f'completed {k} in {end-start} second, {end-abs_start} elapsed so far')
