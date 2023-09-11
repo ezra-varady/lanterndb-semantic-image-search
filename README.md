@@ -18,7 +18,11 @@ CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5
 ```
 This should be sufficient to use the app, though you will have to upload images by hand
 
-## Load Caltech-256 dataset
+## Using the project
+Once you have the database set up you can run the django app with `python3 manage.py runserver`
+TODO: add some images of this
+
+## Loading the Caltech-256 dataset
 
 This is an image dataset that happens to be a convenient size for testing the functionality I'm interested in. To dowload it and insert it into the database run
 ```
@@ -28,9 +32,3 @@ python3 load.py
 With this done lantern is already able to perform semantic image search! Albeit without an interface 
 
 ![Demo](images/ascii_cast.gif)
-
-
-
-## Using the project
-Once you have the database set up you can run the django app with `python3 manage.py runserver`
-TODO: add some images of this
