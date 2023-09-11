@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Image Search</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/carousel.css' %}">
+</head>
+<body>
+    <h1>Image Search</h1>
+
+    <form id="searchForm">
+        <input type="text" id="query_string" placeholder="Enter Query String">
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="carousel-container">
+        <div id="imageCarousel"></div>
+        <div class="control-buttons">
+            <button id=controlButton onclick="prevImage()">Previous</button>
+            <button id=controlButton onclick="nextImage()">Next</button>
+	</div>
+    </div>
+
+    <script>
+        let currentImageIndex = 0;
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "ArrowLeft") {
+                prevImage();
+            }
+            if (event.key === "ArrowRight") {
+                nextImage();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('searchForm');
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const queryString = document.getElementById('query_string').value;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const carousel = document.getElementById('imageCarousel');
+
+                try {
+                    const response = await fetch('/search/query/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: 'query_string=' + encodeURIComponent(queryString)
+                    });
+
+                    if (!response.ok) {
+                        alert('Search failed');
+                        return;
+                    }
+
+                    const data = await response.json();
+                    const ids = data.ids;
+
+                    carousel.innerHTML = '';
+                    let first = true;
+                    ids.forEach(id => {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = '/search/image/' + id + '/';
+                        imgElement.alt = 'Image ' + id;
+                        carousel.appendChild(imgElement);
+                        if (first) {
+                            imgElement.className = 'active';
+                            first = false;
+                        }
+                    });
+                    const firstImage = document.querySelector("#imageCarousel img:first-child");
+                    if (firstImage) {
+                        firstImage.addEventListener("load", function() {
+                            document.querySelector('.control-buttons').style.display = 'flex';
+                            updateCarousel();
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('An error occurred:', error);
+                    alert('An error occurred. Please try again.');
+                }
+                updateCarousel();
+            });
+        });
+        function updateCarousel() {
+            const images = document.querySelectorAll("#imageCarousel img");
+            const carousel = document.getElementById('imageCarousel');
+            images.forEach((img, index) => {
+                img.classList.remove('active');
+                if(index === currentImageIndex) {
+				    console.log('wot');
+                    img.classList.add('active');
+                    carousel.style.height = img.height.toString() + 'px';
+                    carousel.style.width = img.width.toString() + 'px';
+                }
+            });
+        }
+        
+        function nextImage() {
+            const images = document.querySelectorAll("#imageCarousel img");
+            currentImageIndex++;
+            if(currentImageIndex >= images.length) {
+                currentImageIndex = 0;
+            }
+            updateCarousel();
+        }
+        
+        function prevImage() {
+            const images = document.querySelectorAll("#imageCarousel img");
+            currentImageIndex--;
+            if(currentImageIndex < 0) {
+                currentImageIndex = images.length - 1;
+            }
+            updateCarousel();
+        }
+
+    </script>
+</body>
+</html>
+

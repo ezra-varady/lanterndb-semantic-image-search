@@ -1,0 +1,7 @@
+<header>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/landing.css' %}">
+</header>
+<h1>Hello!</h1>
+<a href="{% url 'insert_index' %}"><button>Upload</button></a>
+<a href="{% url 'search_index' %}"><button>Search</button></a>

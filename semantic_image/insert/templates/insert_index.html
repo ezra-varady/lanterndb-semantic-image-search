@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Upload Image</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/upload.css' %}">
+</head>
+<body>
+    <h1>Upload Image</h1>
+
+    <form id="uploadForm">
+        <input type="file" class="input-file" id="file" name="file">
+	<label for="file" class="label-file" id="file-label">Choose File</label>
+        <button type="submit">Upload</button>
+    </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+              const fileInput = document.getElementById("file");
+              const fileLabel = document.getElementById("file-label");
+        
+              fileInput.addEventListener("change", function(e) {
+                  const fileName = e.target.files[0] ? e.target.files[0].name : "Choose File";
+                  fileLabel.textContent = fileName;
+              });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            // Correct the ID
+            const form = document.getElementById('uploadForm');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                const fileField = document.getElementById('file');
+
+                formData.append('file', fileField.files[0]);
+
+                // Fetch CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch('/insert/upload/', {
+                    method: 'POST',
+                    headers: {
+                        // Include CSRF token
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                }).then(response => {  // Add the missing callback
+                    if (response.status === 200) {
+                        alert('File uploaded successfully');
+                    } else {
+                        alert('File upload failed');
+                    }
+                })
+                .catch(error => {
+                    alert('An error occurred: ' + error.message);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
