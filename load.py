@@ -48,6 +48,6 @@ if __name__=='__main__':
         end = time.time()
         print(f'completed {k} in {end-start} second, {end-abs_start} elapsed so far')
 
-    cur.execute('CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5, ef=20, ef_construction=20);')
+    cur.execute('CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5, ef=30, ef_construction=30);')
     conn.commit()
 

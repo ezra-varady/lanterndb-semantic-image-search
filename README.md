@@ -14,13 +14,24 @@ CREATE TABLE IF NOT EXISTS image_table (
 	location VARCHAR,
 	id SERIAL PRIMARY KEY
 );
-CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5, ef=20, ef_construction=20, dims=512);
+CREATE INDEX semantic_image ON image_table USING hnsw (v dist_cos_ops) WITH (M=5, ef=30, ef_construction=30, dims=512);
 ```
 This should be sufficient to use the app, though you will have to upload images by hand
 
 ## Using the project
 Once you have the database set up you can run the django app with `python3 manage.py runserver`
-TODO: add some images of this
+
+If you navigate to the site's address you should see a page asking whether you want to search or upload. Some examples of these two components are shown below. These will just take you to `http://localhost:8000/search` or `http://localhost:8000/insert`
+
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+| ![Search](images/search.png) The caltech dataset has lots of images of people kayaking|![Search](images/search_2.png) It also has lots of pictures of dogs| ![Search](images/no_cat.png) Unfortunately it does not have any images of cats :(|
+
+Lets fix this oversight
+
+|||
+|:-------------------------:|:-------------------------:|
+| ![Upload](images/upload.png) First we upload a picture of a cat, inserting it into the lanterndb index| ![cat](images/cat.png) Now we can find the picture when we search for cats| 
 
 ## Loading the Caltech-256 dataset
 
