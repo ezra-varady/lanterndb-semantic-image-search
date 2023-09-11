@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w^r$^%*p)+@a2w%qm2y1njsk&h5pwk4qlzgw56e2hfft4$2e83
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.238.118.108']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'semantic_image.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ubuntu",
-        "USER": "ubuntu",
-        "PASSWORD": "ubuntu",
+        "NAME": "",
+        "USER": "",
+        "PASSWORD": "",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }

@@ -20,9 +20,9 @@ if __name__=='__main__':
     files = process_cal256('256_ObjectCategories')
     conn = psycopg2.connect(
         host="localhost",
-        database="ubuntu",
-        user="ubuntu",
-        password="ubuntu",
+        database="",
+        user="",
+        password="",
         port=5432
     )
 
@@ -40,7 +40,7 @@ if __name__=='__main__':
     for i, k in enumerate(sorted(list(files.keys()))[198:]):
         start = time.time()
         for im in files[k]:
-            path = f'/home/ubuntu/256/{k}/{im}'
+            path = f'{os.getcwd()}/256/{k}/{im}'
             insert_query = f'INSERT INTO image_table (v, location) VALUES (clip_image(\'{path}\'), \'{path}\');'
             cur.execute(insert_query)
             conn.commit()
